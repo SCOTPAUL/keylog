@@ -1,6 +1,6 @@
 #keylog
 
-A simple keylogger for Linux written in C. Currently requires your keyboard device to be `/dev/input/event4`.
+A simple keylogger for Linux written in C. Currently requires your keyboard input event file to be `/dev/input/by-path/platform-i8042-serio-0-event-kbd`.
 
 ## Usage
 
@@ -8,6 +8,8 @@ A simple keylogger for Linux written in C. Currently requires your keyboard devi
 cd keylog/
 sudo ./keylog "file-to-write-to.txt"
 ```
+
+This will log all keystrokes to the specified file while the program is running.
 
 ## Building
 
