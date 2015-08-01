@@ -3,14 +3,17 @@ CFLAGS= -c -Wall
 
 all: keylog
 
-keylog: main.o keylogger.o
-	$(CC) main.o keylogger.o -o keylog
+keylog: main.o keylogger.o networking.o
+	$(CC) main.o keylogger.o networking.o -o keylog
 
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
 
 keylogger.o: keylogger.c
 	$(CC) $(CFLAGS) keylogger.c
+
+networking.o: networking.c
+	$(CC) $(CFLAGS) networking.c
 
 .PHONY: clean
 clean:

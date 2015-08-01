@@ -100,6 +100,7 @@ int write_all(int file_desc, const char *str){
 
     do {
         bytesWritten = write(file_desc, str, bytesToWrite);
+        
         if(bytesWritten == -1) return 0;
         bytesToWrite -= bytesWritten;
         str += bytesWritten;
