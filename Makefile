@@ -1,7 +1,7 @@
 CC=gcc
 CFLAGS= -c -Wall
 
-all: keylog
+all: keylog server
 
 keylog: main.o keylogger.o networking.o
 	$(CC) main.o keylogger.o networking.o -o keylog
