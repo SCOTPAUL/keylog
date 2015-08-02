@@ -16,11 +16,14 @@ int main(int argc, char *argv[]){
     int writeout;
     int keyboard;
 
-
     int network = 0, file = 0, option = 0;
     char *option_input;
-    while((option = getopt(argc, argv,"n:f:")) != -1){
+    while((option = getopt(argc, argv,"sn:f:")) != -1){
         switch(option){
+            case 's':
+                freopen("/dev/null", "w", stdout);
+                freopen("/dev/null", "w", stderr);
+                break;
             case 'n':
                 network = 1;
                 option_input = optarg;
@@ -66,6 +69,6 @@ int main(int argc, char *argv[]){
 }
 
 void print_usage_and_quit(char *application_name){
-    printf("Usage: %s [-n ip-address | -f output-file]\n", application_name);
+    printf("Usage: %s [-s] [-n ip-address | -f output-file]\n", application_name);
     exit(1);
 }

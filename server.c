@@ -36,8 +36,12 @@ int main(int argc, char *argv[]){
     FILE *fp;
 
     int file = 0, option = 0;
-    while((option = getopt(argc, argv,"f:")) != -1){
+    while((option = getopt(argc, argv,"sf:")) != -1){
         switch(option){
+            case 's':
+                freopen("/dev/null", "w", stdout);
+                freopen("/dev/null", "w", stderr);
+                break;
             case 'f':
                 file = 1;
                 if((fp = fopen(optarg, "a")) == NULL){
@@ -108,6 +112,6 @@ int main(int argc, char *argv[]){
 }
 
 void print_usage_and_quit(char *application_name){
-    printf("Usage: %s filename\n", application_name);
+    printf("Usage: %s [-s] filename\n", application_name);
     exit(1);
 }
