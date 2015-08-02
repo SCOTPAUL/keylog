@@ -6,6 +6,9 @@ all: keylog
 keylog: main.o keylogger.o networking.o
 	$(CC) main.o keylogger.o networking.o -o keylog
 
+server: server.o networking.o
+	$(CC) server.o networking.o -o server
+
 main.o: main.c
 	$(CC) $(CFLAGS) main.c
 
@@ -18,5 +21,5 @@ networking.o: networking.c
 .PHONY: clean
 clean:
 	@echo "Cleaning..."
-	-rm -f keylog *.o
+	-rm -f keylog server *.o
 	@echo "Finished cleaning."

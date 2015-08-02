@@ -13,4 +13,15 @@
  */
 int get_socket_file_descriptor(char *hostname, char *port);
 
+/**
+ * Returns the file descriptor of listening socket.
+ *
+ * If a connection cannot be established, the process is terminated.
+ *
+ * \param port Port number to listen on
+ *
+ * \returns The file descriptor of a stream socket
+ */
+int get_listener_socket_file_descriptor(char *port);
+
 #endif
