@@ -10,6 +10,7 @@
 
 #define PORT "3491"
 #define BACKLOG 15
+#define BUFFER_SIZE 1000
 
 int loop = 1;
 
@@ -29,12 +30,24 @@ int main(int argc, char *argv[]){
     struct sockaddr_storage their_addr; // Address information of client
     socklen_t sin_size;
     char s[INET_ADDRSTRLEN];
+    char buffer[BUFFER_SIZE];
+    ssize_t bytes_recieved;
+    int i;
+    FILE *fp;
 
-    if(argc != 2){
-        print_usage_and_quit(argv[0]);
+    int file = 0, option = 0;
+    while((option = getopt(argc, argv,"f:")) != -1){
+        switch(option){
+            case 'f':
+                file = 1;
+                if((fp = fopen(optarg, "a")) == NULL){
+                    perror("opening");
+                }
+                break;
+            default: print_usage_and_quit(argv[0]);
+        }
     }
 
-    //signal(SIGINT, sigint_handler);
     sockfd = get_listener_socket_file_descriptor(PORT);
 
     if(listen(sockfd, BACKLOG) == -1){
@@ -62,10 +75,26 @@ int main(int argc, char *argv[]){
 
         inet_ntop(their_addr.ss_family, &((struct sockaddr_in *)&their_addr)->sin_addr, s, sizeof(s));
         printf("server: got connection from %s\n", s);
-        close(new_fd);
 
         if(!fork()){ // We are the child process
             close(sockfd);
+
+            bytes_recieved = recv(new_fd, buffer, sizeof(buffer), 0);
+
+            while(bytes_recieved > 0){
+                if(bytes_recieved < 0){
+                    perror("recv");
+                    return 1;
+                }
+
+                for(i = 0; i < bytes_recieved; ++i){
+                    if(file) fprintf(fp, "%c", buffer[i]);
+                    else printf("%c", buffer[i]);
+                }
+                bytes_recieved = recv(new_fd, buffer, sizeof(buffer), 0);
+            }
+            if(file) fflush(fp);
+
             close(new_fd);
             exit(0);
         }
@@ -73,6 +102,7 @@ int main(int argc, char *argv[]){
 
     close(new_fd);
 
+    if(file) fclose(fp);
     return 0;
 
 }

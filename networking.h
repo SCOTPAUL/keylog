@@ -14,7 +14,7 @@
 int get_socket_file_descriptor(char *hostname, char *port);
 
 /**
- * Returns the file descriptor of listening socket.
+ * Returns the file descriptor of a listening socket.
  *
  * If a connection cannot be established, the process is terminated.
  *

