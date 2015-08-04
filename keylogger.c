@@ -120,7 +120,7 @@ int write_all(int file_desc, const char *str){
 void safe_write_all(int file_desc, const char *str, int keyboard){
     struct sigaction new_actn, old_actn;
     new_actn.sa_handler = SIG_IGN;
-    sigemptyset (&new_actn.sa_mask);
+    sigemptyset(&new_actn.sa_mask);
     new_actn.sa_flags = 0;
 
     sigaction(SIGPIPE, &new_actn, &old_actn);

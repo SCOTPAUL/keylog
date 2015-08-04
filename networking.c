@@ -52,7 +52,7 @@ int get_socket_file_descriptor(char *hostname, char *port){
         exit(1);
     }
 
-    inet_ntop(p->ai_family, p->ai_addr, s, sizeof(s));
+    inet_ntop(p->ai_family, &(((struct sockaddr_in *)p->ai_addr)->sin_addr), s, sizeof(s));
     printf("connecting to %s\n", s);
 
     freeaddrinfo(servinfo);
@@ -96,7 +96,7 @@ int get_listener_socket_file_descriptor(char *port){
         exit(1);
     }
 
-    inet_ntop(p->ai_family, p->ai_addr, s, sizeof(s));
+    inet_ntop(p->ai_family, &(((struct sockaddr_in *)p->ai_addr)->sin_addr), s, sizeof(s));
     printf("listening on %s\n", s);
 
     freeaddrinfo(servinfo);
