@@ -85,12 +85,12 @@ int main(int argc, char *argv[]){
 
             bytes_recieved = recv(new_fd, buffer, sizeof(buffer), 0);
 
-            while(bytes_recieved > 0){
-                if(bytes_recieved < 0){
-                    perror("recv");
-                    return 1;
-                }
+            if(bytes_recieved < 0){
+                perror("recv");
+                return 1;
+            }
 
+            while(bytes_recieved > 0){
                 for(i = 0; i < bytes_recieved; ++i){
                     if(file) fprintf(fp, "%c", buffer[i]);
                     else printf("%c", buffer[i]);
