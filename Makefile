@@ -1,22 +1,16 @@
 CC=gcc
-CFLAGS= -c -Wall
+CFLAGS=-c -Wall
+KEYLOG_TARGETS=main.o keylogger.o networking.o find_event_file.o
+SERVER_TARGETS=server.o networking.o
 
 all: keylog server
 
-keylog: main.o keylogger.o networking.o
-	$(CC) main.o keylogger.o networking.o -o keylog
+keylog: $(KEYLOG_TARGETS)
+	$(CC) $^ -o $@
 
-server: server.o networking.o
-	$(CC) server.o networking.o -o server
+server: $(SERVER_TARGETS)
+	$(CC) $^ -o $@
 
-main.o: main.c
-	$(CC) $(CFLAGS) main.c
-
-keylogger.o: keylogger.c
-	$(CC) $(CFLAGS) keylogger.c
-
-networking.o: networking.c
-	$(CC) $(CFLAGS) networking.c
 
 .PHONY: clean
 clean:
