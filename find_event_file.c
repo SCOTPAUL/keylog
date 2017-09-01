@@ -4,7 +4,7 @@
 
 static int is_char_device(const struct dirent *file){
     struct stat filestat;
-    char filename[256];
+    char filename[512];
     int err;
 
     snprintf(filename, sizeof(filename), "%s%s", INPUT_DIR, file->d_name);
@@ -24,7 +24,7 @@ char *get_keyboard_event_file(void){
     char *keyboard_file = NULL;
     int num, i;
     struct dirent **event_files;
-    char filename[256];
+    char filename[512];
 
     num = scandir(INPUT_DIR, &event_files, &is_char_device, &alphasort);
     if(num < 0){
